@@ -17,9 +17,9 @@ class Validate{
 
 		//Validate API Name
 		$api_array = array('statusquery','checkpaymentstatus','getrequeststatus','getmdr','gettransactiondetails','fetchtransactionperiod','gettodaysdata','refund');
-
+		
 		//Validate key api_name 
-		if(isset($api_data['api_name']) && !empty($api_data['api_name'])){
+		if(!empty($api_data['api_name'])){
 			$api_data['api_name'] = strtolower(trim($api_data['api_name']));
 			//Validate API name value
 			if(in_array($api_data['api_name'], $api_array)){
@@ -176,8 +176,16 @@ class Validate{
 		
 		$errors = Array();		
 
+		if (empty($post_data['clientid'])) {
+			$errors['error_mandatory_field_clientid'] = "Missing mandatory field Client Id";
+		}else if (empty($post_data['merchantid'])) {
+			$errors['error_mandatory_field_merchantid'] = "Missing mandatory field Merchant Id";
+		}else if (empty($post_data['checksumseed'])) {
+			$errors['error_mandatory_field_seed'] = "Missing mandatory field Checksum Seed";
+		}
+
 		//Mandatory fields 
-		$mendatory_fields = array('transaction.extref', 'transaction.amount', 'subscriber.customername','subscriber.mobilenumber','returl');
+		$mendatory_fields = array('transaction.extref', 'transaction.amount', 'subscriber.customername','subscriber.mobilenumber','returl','version','channel');
 		//Data keys
 		$post_fields = array_keys($post_data);
 
@@ -186,7 +194,16 @@ class Validate{
 
 		if(!empty($result)){			
 			$errors['error_mandatory_fields'] = "Missing mandatory fields: ".implode($result,',');
-		}else{			
+		}else{
+
+			//Validate not empty Mandatory fields
+			foreach ($mendatory_fields as $value) {
+
+				if(empty($post_data[$value])){
+					$errors['error_mandatory_field_'.$value] = "Missing mandatory fields: ".$value;
+				}
+			}
+
 			//Validate transaction.extref field
 			$extren_length = strlen($post_data['transaction.extref']);
 			if($extren_length < 1 || $extren_length > 20){

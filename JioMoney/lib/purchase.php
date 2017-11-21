@@ -1,12 +1,9 @@
 <?php
 
-namespace Purchase\lib;
-use common_jiomoney\lib\Common_jiomoney as Base;
-
 require_once 'config_jiomoney.php';
 require_once 'common_jiomoney.php';
 
-class Purchase extends Base{
+class Purchase extends Common_jiomoney{
 	
 	/**
 	* Function Name: create
@@ -16,12 +13,18 @@ class Purchase extends Base{
 	*/
 	public function create($purchase_array){
 		
+		/*Get and set MID, CID, SEED, ENV into array*/
+		$purchase_array['merchantid'] 	= Config::$merchantId;
+		$purchase_array['clientid'] 	= Config::$clientId;
+		$purchase_array['checksumseed'] = Config::$seed;
+
 		//Validate purchase request
-		$valid = Base::validatePurchaseRequest($purchase_array);
+		$valid = Common_jiomoney::validatePurchaseRequest($purchase_array);
 		
 		if($valid['flag']){
 			//Gather all the required required details
 			$purchase_array = $this->gatherPostData($purchase_array);
+			unset($purchase_array['checksumseed']);
 	?>
 			<!--Submit the form as POST from backend-->
 			<html>
@@ -30,9 +33,8 @@ class Purchase extends Base{
 				</head>
 				<body>
 					<center><h1>Please do not refresh this page...</h1></center>
-						<form method="post" action="<?php echo PURCHASE_URL ?>" name="redirectfrm">
-						<?php
-								
+						<form method="post" action="<?php echo Config::$arrUrl['purchase_url'] ?>" name="redirectfrm">
+						<?php							
 							foreach($purchase_array as $name => $value) {
 								echo '<input type="hidden" name="' . $name .'" value="' . $value . '"/>';
 							}						
@@ -63,18 +65,16 @@ class Purchase extends Base{
 	* Return : Array of arranged data as per form POST
 	*/
 	private function gatherPostData($value)
-	{			
-		$value['merchantid'] 			= MERCHANT_ID;
-		$value['clientid'] 				= CLIENT_ID;
-		$value['channel'] 				= "WEB";
-		$value['version']				= VERSION;
+	{	
+		$value['merchantid'] 			= Config::$merchantId;
+		$value['clientid'] 				= Config::$clientId;		
 		$value['token'] 				= "";
 		$value['transaction.txntype'] 	= "PURCHASE";
 		$value['transaction.currency'] 	= "INR";
 		$timestamp = date('YmdHis');
 		$value['transaction.timestamp']	= $timestamp;
 		
-		$value['returl'] 				= !empty($value['returl']) ? $value['returl'] : PURCHASE_RESPONSE_URL;
+		$value['returl'] 				= !empty($value['returl']) ? $value['returl'] : Config::$purchaseResponseUrl;
 
 		/* Optional Parameter
 			To check UDF is present in purchase Request`*/
@@ -95,7 +95,7 @@ class Purchase extends Base{
 		}
 
 		//function to calculate checksum 
-		$checksum = Base::genrateChecksum('PURCHASE', $value, $udf_array);
+		$checksum = Common_jiomoney::genrateChecksum('PURCHASE', $value, $udf_array);
 
 		$value['checksum'] = $checksum;
 

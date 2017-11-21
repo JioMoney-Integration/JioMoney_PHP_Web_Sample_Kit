@@ -1,7 +1,7 @@
 <?php
 
-namespace common_jiomoney\lib;
 use Validate\lib\Validate as Validate; 
+
 /*
 - Common functions required for payment gateway integration
 */
@@ -32,7 +32,7 @@ class common_jiomoney extends Validate{
 						*/
 						$data['productdescription'] = isset($data['productdescription']) ? $data['productdescription'] : "";
 
-						$checksum_str = CLIENT_ID."|".$data['transaction.amount']."|".$data['transaction.extref']."|".$data['channel']."|".MERCHANT_ID."||".$data['returl']."|".$data['transaction.timestamp']."|PURCHASE|".$data['subscriber.mobilenumber']."|".$data['productdescription']."|".$data['udf1']."|".$data['udf2']."|".$data['udf3']."|".$data['udf4']."|".$data['udf5'];
+						$checksum_str = Config::$clientId."|".$data['transaction.amount']."|".$data['transaction.extref']."|".$data['channel']."|".Config::$merchantId."||".$data['returl']."|".$data['transaction.timestamp']."|PURCHASE|".$data['subscriber.mobilenumber']."|".$data['productdescription']."|".$data['udf1']."|".$data['udf2']."|".$data['udf3']."|".$data['udf4']."|".$data['udf5'];
 
 					}else{
 
@@ -40,18 +40,18 @@ class common_jiomoney extends Validate{
 						* Clientid|Amount|Extref|Channel|MerchantId|Token|ReturnUrl|TxnTimeStamp|TxnType|subscriber.mobilenumber
 						*/
 
-						$checksum_str = CLIENT_ID."|".$data['transaction.amount']."|".$data['transaction.extref']."|".$data['channel']."|".MERCHANT_ID."||".$data['returl']."|".$data['transaction.timestamp']."|PURCHASE|".$data['subscriber.mobilenumber'];
+						$checksum_str = Config::$clientId."|".$data['transaction.amount']."|".$data['transaction.extref']."|".$data['channel']."|".Config::$merchantId."||".$data['returl']."|".$data['transaction.timestamp']."|PURCHASE|".$data['subscriber.mobilenumber'];
 					}
 
 					
 					break;
 				case 'REFUND' :
 					/*  CHECKSUM GENRATION FORMAT:
-					* merchant_Id|api_name|timestamp|tran_ref_no|txn_amount|org_jm_tran_ref_no|org_txn_timestamp|additional_info
+					* MERCHANT_ID|api_name|timestamp|tran_ref_no|txn_amount|org_jm_tran_ref_no|org_txn_timestamp|additional_info
 					*/
 					$data['additional_info'] = isset($data['additional_info']) ? $data['additional_info'] : "NA";
 
-					$checksum_str = MERCHANT_ID."|REFUND|".$data['timestamp']."|".$data['tran_ref_no']."|".$data['txn_amount']."|".$data['org_jm_tran_ref_no']."|".$data['org_txn_timestamp']."|".$data['additional_info'];
+					$checksum_str = Config::$merchantId."|REFUND|".$data['timestamp']."|".$data['tran_ref_no']."|".$data['txn_amount']."|".$data['org_jm_tran_ref_no']."|".$data['org_txn_timestamp']."|".$data['additional_info'];
 
 					break;
 
@@ -60,57 +60,56 @@ class common_jiomoney extends Validate{
 					* CLIENT_ID|MERCHANT_ID|APINAME|TRAN_REF_NO
 					* TRAN_REF_NO -> Transaction extref number provided by the merchant during the purchase transaction
 					*/
-					$checksum_str = CLIENT_ID."|".MERCHANT_ID."|STATUSQUERY|".$data['tran_ref_no'];
+					$checksum_str = Config::$clientId."|".Config::$merchantId."|STATUSQUERY|".$data['tran_ref_no'];
 
 					break;
 
 				case 'CHECKPAYMENTSTATUS':
 					/* CHECKSUM GENRATION FORMAT:
-					* APINAME~MODE~REQUESTID~STARTDATETIME~ENDDATETIME~MID~TRANID
-					*/
-					$checksum_str = "CHECKPAYMENTSTATUS~".$data['mode']."~".$data['requestid']."~NA~NA~".MERCHANT_ID."~".$data['tranid'];
-
+					* CHECKPAYMENTSTATUS|timestamp|mid
+					*/					
+					$checksum_str = "CHECKPAYMENTSTATUS|".$data['timestamp']."|".Config::$merchantId;
 					break;
 
 				case 'GETREQUESTSTATUS':
 					/* CHECKSUM GENRATION FORMAT:
 					* APINAME~MODE~REQUESTID~STARTDATETIME~ENDDATETIME~MID~TRANID
 					*/
-					$checksum_str = "GETREQUESTSTATUS~".$data['mode']."~".$data['requestid']."~NA~NA~".MERCHANT_ID."~".$data['tranid'];	
+					$checksum_str = "GETREQUESTSTATUS~".$data['mode']."~".$data['requestid']."~NA~NA~".Config::$merchantId."~".$data['tranid'];	
 					break;
 				
 				case 'GETMDR':
 					/* CHECKSUM GENRATION FORMAT:
 					* APINAME~MODE~REQUESTID~STARTDATETIME~ENDDATETIME~MID~TRANID
 					*/
-					$checksum_str = "GETMDR~".$data['mode']."~".$data['requestid']."~NA~NA~".MERCHANT_ID."~".$data['tranid'];	
+					$checksum_str = "GETMDR~".$data['mode']."~".$data['requestid']."~NA~NA~".Config::$merchantId."~".$data['tranid'];	
 					break;
 
 				case 'GETTRANSACTIONDETAILS':
 					/* CHECKSUM GENRATION FORMAT:
 					* APINAME~MODE~REQUESTID~STARTDATETIME~ENDDATETIME~MID~TRANID
 					*/				
-					$checksum_str = "GETTRANSACTIONDETAILS~".$data['mode']."~".$data['requestid']."~NA~NA~".MERCHANT_ID."~".$data['tranid'];	
+					$checksum_str = "GETTRANSACTIONDETAILS~".$data['mode']."~".$data['requestid']."~NA~NA~".Config::$merchantId."~".$data['tranid'];	
 					break;
 
 				case 'FETCHTRANSACTIONPERIOD':
 					/* CHECKSUM FETCHTRANSACTIONPERIOD FORMAT:
 					* APINAME~MODE~REQUESTID~STARTDATETIME~ENDDATETIME~MID~TRANID
 					*/
-					$checksum_str = "FETCHTRANSACTIONPERIOD~".$data['mode']."~".$data['requestid']."~".$data['startdate']."~".$data['enddate']."~".MERCHANT_ID."~NA";	
+					$checksum_str = "FETCHTRANSACTIONPERIOD~".$data['mode']."~".$data['requestid']."~".$data['startdate']."~".$data['enddate']."~".Config::$merchantId."~NA";	
 					break;	
 
 				case 'GETTODAYSDATA':
 					/* CHECKSUM FETCHTRANSACTIONPERIOD FORMAT:
 					* APINAME~MODE~REQUESTID~STARTDATETIME~ENDDATETIME~MID~TRANID
 					*/
-					$checksum_str = "GETTODAYSDATA~".$data['mode']."~".$data['requestid']."~NA~NA~".MERCHANT_ID."~NA";	
+					$checksum_str = "GETTODAYSDATA~".$data['mode']."~".$data['requestid']."~NA~NA~".Config::$merchantId."~NA";	
 					break;
 				default:
 					# code...
 					break;
 			}		
-			$checksum = hash_hmac('SHA256',$checksum_str, CHECKSUM_SEED);
+			$checksum = hash_hmac('SHA256',$checksum_str, Config::$seed);
 		}else{
 
 			return "Invalid Type";
@@ -127,7 +126,7 @@ class common_jiomoney extends Validate{
 	* Return : curl response String
 	*/
 
-	public function curlRequest($data,$url,$mode){
+	public function curlRequest($data,$url,$mode,$version = ""){
 		
 		// Mode is used to get in what format response is required. For XML 1 , for JSON 2
 		if($mode == '1'){
@@ -141,6 +140,10 @@ class common_jiomoney extends Validate{
 		$headers = array();
 		$headers[] = 'Accept: application/'.$mode;
 		$headers[] = 'Content-Type: application/'.$mode;
+		
+		if(!empty($version)){
+			$headers[] = 'APIVer:'.$version;
+		}
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);

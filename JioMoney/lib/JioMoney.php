@@ -1,12 +1,8 @@
 <?php
 
-namespace JioMoney\lib;
-
-require 'purchase.php';
-require 'Api.php';
-
-use Purchase\lib\Purchase;
-use Api\lib\Api;
+require_once 'config_jiomoney.php';
+require_once 'purchase.php';
+require_once 'Api.php';
 
 class JioMoney{
 
@@ -20,13 +16,21 @@ class JioMoney{
 
     }
 
-	public function purchase($purchase_array){
+    //To set credentials 
+    public static function setCredentials($clientId,$merchnatId,$seed,$env){
+    	$instance = new self();
+    	$obj = new config($clientId,$merchnatId,$seed,$env);
+    	return $instance;
+    }
 
+
+	public function purchase($purchase_array){
+		
 		$this->purchae_obj->create($purchase_array);
 	}
 
 	public function api($request_array){
-		
+	
 		return $this->api_obj->allApis($request_array);
 
 	}
