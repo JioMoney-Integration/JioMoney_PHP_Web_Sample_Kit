@@ -1,11 +1,15 @@
 <?php
 
-	require 'lib\JioMoney.php';
+	require_once 'lib\JioMoney.php';
+	//ClientId,MerchnatId and seed will be provided by JioMoney integration team for testing environment.
+	$clientId 	= '';
+	$merchnatId = '';
+	$seed 		= '';
+	// 1 = Testing & 2 = Production
+	$env 	= '1';
+	
+	$call = JioMoney::setCredentials($clientId,$merchnatId,$seed,$env);
 
-	use JioMoney\lib\JioMoney;
-
-
-	$call = new JioMoney();
 	/**
 	* Purchase
 	* To perform purchase transactions.
@@ -13,9 +17,8 @@
 	* optional Fields : Please refer integration document for reaming fields
 	* Response will get on returl
 	*/
-
-	$call->purchase(array('transaction.extref' => 'Purchase1k2sai', 'transaction.amount' => '1.00', 'subscriber.customername'=>'demo_name','subscriber.mobilenumber'=>'+9812345678','returl'=>'http://Domain_name/path/JioMoney/response.php','productdescription'=>'product1','udf1'=>'udf11','udf2'=>'udf22'));
-
+		
+	$call->purchase(array('transaction.extref' => 'Purchase1k2s3i','channel' => 'WEB','version' => '2.0', 'transaction.amount' => '1.00', 'subscriber.customername'=>'demo_name','subscriber.mobilenumber'=>'+9833587788','returl'=>'http://localhost/JioMoney/response.php','productdescription'=>'product1','udf1'=>'udf11','udf2'=>'udf22'));
 
 	/**
 	* REFUND API
@@ -25,19 +28,19 @@
 	* Used for full refund and partial refund
 	*/
 
-	//$response = $call->api(array('api_name'=> 'REFUND','timestamp' => date('YmdHis'),'tran_ref_no' => 'Refundk70pq7WTU','txn_amount' => '1.00','org_jm_tran_ref_no'=>'901033427824','org_txn_timestamp'=>'20170630154243','mode'=>'2','additional_info' => 'optional'));
+	$response = $call->api(array('api_name'=> 'REFUND','timestamp' => date('YmdHis'),'tran_ref_no' => 'Refundk70pq7WT8','txn_amount' => '1.00','org_jm_tran_ref_no'=>'901033538648','org_txn_timestamp'=>'20171121125700473','mode'=>'2','additional_info' => 'optional'));
 	
 	/**
 	* STATUSQUERY API
 	* All fields are mandatory 
 	*/
-	//$response = $call->api(array('api_name'=> 'STATUSQUERY','tran_ref_no'=>'Purchase1kNeee','mode'=>'2'));
+	$response = $call->api(array('api_name'=> 'STATUSQUERY','tran_ref_no'=>'Purchase1k2sai','mode'=>'2'));
 	
 
 	/**
 	* To generate uuid format request id
 	*/
-	//$requestId = $call->gen_uuid();
+	$requestId = $call->gen_uuid();
 
 
 	/**
@@ -46,14 +49,14 @@
 	* This API is to fetch status of a transaction using merchant reference number. This API needs to be called for all the transactions for which you don’t get 
 	* Return response from JioMoney.
 	*/
-	//$response = $call->api(array('api_name'=> 'CHECKPAYMENTSTATUS','tranid'=>'Purchase1kNeee','mode'=>'2', 'requestid'=>$requestId));
+	$response = $call->api(array('api_name'=> 'CHECKPAYMENTSTATUS','tranid'=>'Purchase1k2sai','mode'=>'2','timestamp' => date('YmdHis'), 'requestid'=>$requestId,'version'=>'3.0'));
 
 	/**
 	* All fields are mandatory
 	* GETREQUESTSTATUS
 	* To check the status of refund requests.
 	*/
-	//$response = $call->api(array('api_name'=> 'GETREQUESTSTATUS','tranid'=>'901033424012','mode'=>'2', 'requestid'=>$requestId));
+	$response = $call->api(array('api_name'=> 'GETREQUESTSTATUS','tranid'=>'901033538648','mode'=>'2', 'requestid'=>$requestId));
 
 
 	/**
@@ -61,7 +64,7 @@
 	* GETMDR
 	* To get MDR details of a transaction
 	*/
-	//$response = $call->api(array('api_name'=> 'GETMDR','tranid'=>'901033424012','mode'=>'2', 'requestid'=>$requestId));
+	$response = $call->api(array('api_name'=> 'GETMDR','tranid'=>'901033424012','mode'=>'2', 'requestid'=>$requestId));
 	
 
 	/**
@@ -69,7 +72,7 @@
 	* GETTRANSACTIONDETAILS
 	* To get MDR details of a transaction
 	*/
-	//$response = $call->api(array('api_name'=> 'GETTRANSACTIONDETAILS','tranid'=>'901033422981','mode'=>'2', 'requestid'=>$requestId));
+	$response = $call->api(array('api_name'=> 'GETTRANSACTIONDETAILS','tranid'=>'901033422981','mode'=>'2', 'requestid'=>$requestId));
 	
 
 	/**
@@ -78,7 +81,7 @@
 	* To fetch all the transactions for a given period
 	* Format : yyyyMMddHHmmss
 	*/
-	//$response = $call->api(array('api_name'=> 'FETCHTRANSACTIONPERIOD','mode'=>'2','startdate'=>'20170615101010','enddate'=>'20170625101010' , 'requestid'=>$requestId));
+	$response = $call->api(array('api_name'=> 'FETCHTRANSACTIONPERIOD','mode'=>'2','startdate'=>'20170615101010','enddate'=>'20170625101010' , 'requestid'=>$requestId));
 
 
 	/**
@@ -87,7 +90,6 @@
 	* To get analysis of today’s business
 	* Format : yyyyMMddHHmmss
 	*/
-	//$response = $call->api(array('api_name'=> 'GETTODAYSDATA','mode'=>'2', 'requestid'=>$requestId));
-
+	$response = $call->api(array('api_name'=> 'GETTODAYSDATA','mode'=>'2', 'requestid'=>$requestId));
 
 ?>
