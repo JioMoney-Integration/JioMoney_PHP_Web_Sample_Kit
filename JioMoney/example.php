@@ -2,11 +2,7 @@
 
 	require_once 'lib\JioMoney.php';
 	//ClientId,MerchnatId and seed will be provided by JioMoney integration team for testing environment.
-	$clientId 	= '';
-	$merchnatId = '';
-	$seed 		= '';
-	// 1 = Testing & 2 = Production
-	$env 	= '1';
+	//$env for 1 = Testing & 2 = Production
 	
 	$call = JioMoney::setCredentials($clientId,$merchnatId,$seed,$env);
 
