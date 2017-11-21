@@ -69,5 +69,5 @@ class Config{
 	
 
 }
-
+Config::setUrl();
 ?>
